@@ -9,7 +9,7 @@
 <body>
     <header class="topbar">
         <div class="container topbar-inner">
-            <a class="brand" href="{{ url_for('dashboard') }}">Job Tracker</a>
+            <a class="brand" href="{{ url_for('dashboard') }}">Zach's Job Tracker</a>
             <nav>
                 {% set current = request.endpoint or '' %}
                 <a href="{{ url_for('dashboard') }}" class="{{ 'active' if current == 'dashboard' }}">Dashboard</a>
