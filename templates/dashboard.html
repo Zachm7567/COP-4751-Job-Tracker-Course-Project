@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Job Tracker{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+
+<div class="stats">
+    <a class="stat" href="{{ url_for('companies') }}"><span class="stat-number">{{ counts.companies }}</span><span class="stat-label">Companies</span></a>
+    <a class="stat" href="{{ url_for('jobs') }}"><span class="stat-number">{{ counts.jobs }}</span><span class="stat-label">Jobs</span></a>
+    <a class="stat" href="{{ url_for('applications') }}"><span class="stat-number">{{ counts.applications }}</span><span class="stat-label">Applications</span></a>
+    <a class="stat" href="{{ url_for('contacts') }}"><span class="stat-number">{{ counts.contacts }}</span><span class="stat-label">Contacts</span></a>
+    <div class="stat"><span class="stat-number">{{ response_rate }}%</span><span class="stat-label">Response rate</span></div>
+    <div class="stat">
+        <span class="stat-number">{% if salary and salary.low %}${{ '{:,}'.format(salary.low|int) }}{% else %}-{% endif %}</span>
+        <span class="stat-label">Avg minimum salary</span>
+    </div>
+</div>
+
+<div class="grid-2">
+    <section class="card">
+        <h2>Applications by status</h2>
+        {% for row in status_counts %}
+        <div class="bar-row">
+            <a class="bar-label" href="{{ url_for('applications', status=row.status) }}">{{ row.status }}</a>
+            <div class="bar-track"><div class="bar-fill" style="width: {{ (row.total * 100 / max_status)|round|int }}%"></div></div>
+            <span class="bar-value">{{ row.total }}</span>
+        </div>
+        {% endfor %}
+    </section>
+
+    <section class="card">
+        <h2>Recent applications</h2>
+        {% if recent %}
+        <ul class="plain-list">
+            {% for a in recent %}
+            <li>
+                <a href="{{ url_for('application_detail', application_id=a.application_id) }}">{{ a.job_title }} at {{ a.company_name }}</a>
+                <span class="badge badge-{{ a.status|lower }}">{{ a.status }}</span>
+                <span class="muted">{{ a.application_date }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="muted">No applications yet.</p>
+        {% endif %}
+    </section>
+</div>
+
+<section class="card">
+    <h2>Companies with the most postings</h2>
+    {% if top_companies %}
+    <ul class="plain-list">
+        {% for c in top_companies %}
+        <li><a href="{{ url_for('company_detail', company_id=c.company_id) }}">{{ c.company_name }}</a> <span class="muted">{{ c.total }} job{{ '' if c.total == 1 else 's' }}</span></li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted">No companies yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

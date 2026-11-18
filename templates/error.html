@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Database Error{% endblock %}
+{% block content %}
+<h1>Database error</h1>
+<div class="card">
+    <p>The application could not complete the database request.</p>
+    <p class="mono">{{ message }}</p>
+    <p class="muted">Check that MySQL is running, that schema.sql has been loaded, and that DB_USER and DB_PASSWORD are set correctly.</p>
+</div>
+{% endblock %}

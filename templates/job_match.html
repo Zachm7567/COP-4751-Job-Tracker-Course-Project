@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Job Match - Job Tracker{% endblock %}
+{% block content %}
+<h1>Job Match</h1>
+<form method="post" class="card form">
+    <div class="form-row">
+        <label for="skills">Your skills</label>
+        <input id="skills" type="text" name="skills" value="{{ skills_text }}" placeholder="Python, SQL, Flask" required>
+        <small class="muted">Separate skills with commas. Jobs are ranked by how many of their required skills you have.</small>
+    </div>
+    <div class="form-actions"><button type="submit" class="btn btn-primary">Find Matches</button></div>
+</form>
+
+{% if results is not none %}
+<section class="card">
+    <h2>Matching jobs for: {{ skills|join(', ') }}</h2>
+    {% if results %}
+    <ol class="matches">
+        {% for r in results %}
+        <li class="match">
+            <div class="match-head">
+                <a href="{{ url_for('job_detail', job_id=r.job_id) }}">{{ r.job_title }}</a> at {{ r.company_name }}
+                <strong class="match-percent">{{ r.percent }}%</strong>
+                <span class="muted">({{ r.matched|length }}/{{ r.total }} skills)</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill {{ 'bar-high' if r.percent >= 75 else ('bar-mid' if r.percent >= 40 else 'bar-low') }}" style="width: {{ r.percent }}%"></div></div>
+            {% if r.matched %}<div class="skills">Matched: {% for s in r.matched %}<span class="chip chip-match">{{ s }}</span>{% endfor %}</div>{% endif %}
+            {% if r.missing %}<div class="skills">Missing: {% for s in r.missing %}<span class="chip chip-missing">{{ s }}</span>{% endfor %}</div>{% endif %}
+        </li>
+        {% endfor %}
+    </ol>
+    {% else %}
+    <p class="muted">No jobs have required skills listed yet. Add skills to a job to use Job Match.</p>
+    {% endif %}
+</section>
+{% endif %}
+{% endblock %}

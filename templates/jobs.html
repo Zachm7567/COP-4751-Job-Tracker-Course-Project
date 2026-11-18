@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Jobs - Job Tracker{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Jobs</h1>
+    <a class="btn btn-primary" href="{{ url_for('job_new') }}">Add Job</a>
+</div>
+<form method="get" class="search">
+    <input type="search" name="q" value="{{ search }}" placeholder="Search by job title or company">
+    <button class="btn" type="submit">Search</button>
+</form>
+<div class="card table-card">
+    <table>
+        <thead><tr><th>Job</th><th>Company</th><th>Type</th><th>Salary</th><th>Skills</th><th>Applications</th><th class="col-actions">Actions</th></tr></thead>
+        <tbody>
+        {% for j in jobs %}
+        <tr>
+            <td><a href="{{ url_for('job_detail', job_id=j.job_id) }}">{{ j.job_title }}</a></td>
+            <td>{{ j.company_name }}</td>
+            <td>{{ j.job_type or '' }}</td>
+            <td>{% if j.salary_min is not none and j.salary_max is not none %}${{ '{:,}'.format(j.salary_min) }} - ${{ '{:,}'.format(j.salary_max) }}{% endif %}</td>
+            <td>{% for s in j.skills %}<span class="chip">{{ s }}</span>{% endfor %}</td>
+            <td>{{ j.application_count }}</td>
+            <td class="col-actions">
+                <a class="btn btn-small" href="{{ url_for('job_edit', job_id=j.job_id) }}">Edit</a>
+                <form method="post" action="{{ url_for('job_delete', job_id=j.job_id) }}" onsubmit="return confirm('Delete this job and all of its applications?');">
+                    <button type="submit" class="btn btn-small btn-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="muted">No jobs found.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
